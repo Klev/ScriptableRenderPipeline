@@ -239,12 +239,12 @@ namespace UnityEngine.Rendering.LWRP
         Material GetMaterial(DefaultMaterialType materialType)
         {
 #if UNITY_EDITOR
+            if (scriptableRendererData == null || editorResources == null)
+                return null;
+
             var material = scriptableRendererData.GetDefaultMaterial(materialType);
             if (material != null)
                 return material;
-
-            if (editorResources == null)
-                return null;
 
             switch (materialType)
             {
