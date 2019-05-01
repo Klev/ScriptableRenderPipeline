@@ -27,12 +27,12 @@ struct MetaInput
 struct Attributes
 {
     float4 positionOS   : POSITION;
-    half3  normalOS     : NORMAL;
-    float2 uv           : TEXCOORD0;
-    float2 uvLM         : TEXCOORD1;
-    float2 uvDLM        : TEXCOORD2;
+    float3 normalOS     : NORMAL;
+    float2 uv0          : TEXCOORD0;
+    float2 uv1          : TEXCOORD1;
+    float2 uv2          : TEXCOORD2;
 #ifdef _TANGENT_TO_WORLD
-    half4 tangentOS     : TANGENT;
+    float4 tangentOS     : TANGENT;
 #endif
 };
 
@@ -42,11 +42,18 @@ struct Varyings
     float2 uv           : TEXCOORD0;
 };
 
-float4 MetaVertexPosition(float4 positionOS, float2 uvLM, float2 uvDLM, float4 lightmapST)
+float4 MetaVertexPosition(float4 positionOS, float2 uv1, float2 uv2, float4 uv1ST, float4 uv2ST)
 {
     if (unity_MetaVertexControl.x)
     {
-        positionOS.xy = uvLM * lightmapST.xy + lightmapST.zw;
+        positionOS.xy = uv1 * uv1ST.xy + uv1ST.zw;
+        // OpenGL right now needs to actually use incoming vertex position,
+        // so use it in a very dummy way
+        positionOS.z = positionOS.z > 0 ? REAL_MIN : 0.0f;
+    }
+    if (unity_MetaVertexControl.y)
+    {
+        positionOS.xy = uv2 * uv2ST.xy + uv2ST.zw;
         // OpenGL right now needs to actually use incoming vertex position,
         // so use it in a very dummy way
         positionOS.z = positionOS.z > 0 ? REAL_MIN : 0.0f;
