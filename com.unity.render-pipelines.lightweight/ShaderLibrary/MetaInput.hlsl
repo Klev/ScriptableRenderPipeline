@@ -2,6 +2,7 @@
 #define LIGHTWEIGHT_META_PASS_INCLUDED
 
 #include "Packages/com.unity.render-pipelines.lightweight/ShaderLibrary/Lighting.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl"
 
 CBUFFER_START(UnityMetaPass)
 // x = use uv1 as raster position
@@ -76,7 +77,13 @@ half4 MetaFragment(MetaInput input)
     }
     if (unity_MetaFragmentControl.y)
     {
-        res = half4(input.Emission, 1.0);
+        half3 emission;
+        if (unity_UseLinearSpace)
+            emission = input.Emission;
+        else
+            emission = LinearToSRGB(input.Emission);
+
+        res = half4(emission, 1.0);
     }
     return res;
 }
